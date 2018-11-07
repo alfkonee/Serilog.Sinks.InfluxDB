@@ -62,6 +62,7 @@ namespace Serilog
             string source,
             string address,
             string dbName,
+            string retentionPolicy = InfluxDBDefaults.DefaultRetentionPolicy,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             int batchPostingLimit = InfluxDBSink.DefaultBatchPostingLimit,
             TimeSpan? period = null,
@@ -72,6 +73,7 @@ namespace Serilog
                 Address = address,
                 Port = InfluxDBDefaults.DefaultPort,
                 DbName = dbName,
+                RetentionPolicy = retentionPolicy,
                 Username = string.Empty,
                 Password = string.Empty
             };
@@ -89,6 +91,7 @@ namespace Serilog
             string dbName,
             string username,
             string password,
+            string retentionPolicy = InfluxDBDefaults.DefaultRetentionPolicy,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             int batchPostingLimit = InfluxDBSink.DefaultBatchPostingLimit,
             TimeSpan? period = null,
@@ -99,6 +102,7 @@ namespace Serilog
                 Address = address,
                 Port = InfluxDBDefaults.DefaultPort,
                 DbName = dbName,
+                RetentionPolicy = retentionPolicy,
                 Username = username,
                 Password = password
             };

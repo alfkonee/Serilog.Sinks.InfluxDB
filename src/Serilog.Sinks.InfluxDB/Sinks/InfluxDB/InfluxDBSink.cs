@@ -82,33 +82,43 @@ namespace Serilog.Sinks.InfluxDB
         /// not both.</remarks>
         protected override async Task EmitBatchAsync(IEnumerable<LogEvent> events)
         {
-            if (events == null) throw new ArgumentNullException(nameof(events));
-
-            var logEvents = events as List<LogEvent> ?? events.ToList();
-            var points = new List<Point>(logEvents.Count);
-
-            foreach (var logEvent in logEvents)
+            try
             {
-                var p = new Point
+                if (events == null) throw new ArgumentNullException(nameof(events));
+
+                var logEvents = events as List<LogEvent> ?? events.ToList();
+                var points = new List<Point>(logEvents.Count);
+
+                foreach (var logEvent in logEvents)
                 {
-                    Name = _source,
-                    Fields = logEvent.Properties.ToDictionary(k => k.Key, v => (object)v.Value),
-                    Timestamp = logEvent.Timestamp.UtcDateTime
-                };
 
-                // Add tags
-                if (logEvent.Exception != null) p.Tags.Add("exceptionType", logEvent.Exception.GetType().Name);
-                if (logEvent.MessageTemplate != null) p.Tags.Add("messageTemplate", logEvent.MessageTemplate.Text);
+                    var p = new Point
+                    {
+                        Name = _source,
+                        Fields = logEvent.Properties.ToDictionary(k => k.Key, v => v.Key == "StatusCode"? (object) v.Value.ToString() :v.Value ),
+                        Timestamp = logEvent.Timestamp.UtcDateTime
+                    };
 
-                p.Tags.Add("level", logEvent.Level.ToString());
+                    // Add tags
+                    if (logEvent.Exception != null) p.Tags.Add("exceptionType", logEvent.Exception.GetType().Name);
+                    //if (logEvent.MessageTemplate != null) p.Tags.Add("messageTemplate", logEvent.MessageTemplate.Text);
 
-                // Add rendered message
-                p.Fields["message"] = logEvent.RenderMessage(_formatProvider);
+                    p.Tags.Add("level", logEvent.Level.ToString());
 
-                points.Add(p);
+                    // Add rendered message
+                    p.Fields["message"] = logEvent.RenderMessage(_formatProvider);
+
+                    points.Add(p);
+                }
+
+                var resp = await _influxDbClient.Client.WriteAsync(points, new SerilogFormatter(), _connectionInfo.DbName,
+                    _connectionInfo.RetentionPolicy);
             }
-
-            await _influxDbClient.Client.WriteAsync(points, _connectionInfo.DbName);
+            catch (Exception e)
+            {
+                //ignored
+            }
+            
         }
 
         /// <summary>
@@ -121,7 +131,8 @@ namespace Serilog.Sinks.InfluxDB
                 $"{_connectionInfo.Address}:{_connectionInfo.Port}",
                 _connectionInfo.Username,
                 _connectionInfo.Password,
-                InfluxDbVersion.Latest);
+                InfluxDbVersion.Latest)
+                ;
         }
 
         /// <summary>

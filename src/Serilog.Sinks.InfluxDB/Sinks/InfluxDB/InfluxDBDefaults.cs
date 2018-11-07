@@ -25,5 +25,10 @@ namespace Serilog.Sinks.InfluxDB
         /// Default database name in InfluxDB
         /// </summary>
         public const string DefaultDbName = "LogDb";
+
+        /// <summary>
+        /// Defautl Retention Policy Name in Influx Db
+        /// </summary>
+        public const string DefaultRetentionPolicy = "autogen";
     }
 }

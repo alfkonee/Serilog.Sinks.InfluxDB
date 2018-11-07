@@ -28,6 +28,7 @@ namespace Serilog.Sinks.InfluxDB
         {
             Port = InfluxDBDefaults.DefaultPort;
             DbName = InfluxDBDefaults.DefaultDbName;
+            RetentionPolicy = InfluxDBDefaults.DefaultRetentionPolicy;
         }
 
         /// <summary>
@@ -58,5 +59,12 @@ namespace Serilog.Sinks.InfluxDB
         /// Gets or sets the password used for authentication.
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the retention policy in InfluxDB.
+        /// Default value is autogen.
+        /// </summary>
+        [DefaultValue(InfluxDBDefaults.DefaultRetentionPolicy)]
+        public string RetentionPolicy { get; set; }
     }
 }
