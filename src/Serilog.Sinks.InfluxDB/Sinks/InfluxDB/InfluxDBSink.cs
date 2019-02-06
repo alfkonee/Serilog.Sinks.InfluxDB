@@ -114,7 +114,7 @@ namespace Serilog.Sinks.InfluxDB
                 var resp = await _influxDbClient.Client.WriteAsync(points, new SerilogFormatter(), _connectionInfo.DbName,
                     _connectionInfo.RetentionPolicy);
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 //ignored
             }
